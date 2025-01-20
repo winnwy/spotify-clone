@@ -1,7 +1,10 @@
 import 'package:client/core/theme/app_pallete.dart';
+import 'package:client/features/auth/repositories/auth_remote_repository.dart';
+import 'package:client/features/auth/view/pages/login_page.dart';
 import 'package:client/features/auth/view/widgets/auth_gradient_button.dart';
 import 'package:client/features/auth/view/widgets/custom_field.dart';
 import 'package:flutter/material.dart';
+import 'package:fpdart/fpdart.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -62,21 +65,39 @@ class _SignupPageState extends State<SignupPage> {
               const SizedBox(height: 20),
               AuthGradientButton(
                 buttonText: 'Sign up',
-                onTap: () {},
+                onTap: () async {
+                  final res = await AuthRemoteRepository().signup(
+                      name: nameController.text,
+                      email: emailController.text,
+                      password: passwordController.text);
+
+                  final val = switch(res) {
+                    Left(value: final l) => l,
+                    Right(value: final r) => r.name,
+                  };
+                  print(val);
+                },
+                
               ),
               const SizedBox(height: 20),
-              RichText(
-                  text: TextSpan(
-                      text: 'Already have an account? ',
-                      style: Theme.of(context).textTheme.titleMedium,
-                      children: [
-                    TextSpan(
-                        text: 'Sign In',
-                        style: TextStyle(
-                          color: Pallete.gradient2,
-                          fontWeight: FontWeight.bold,
-                        )),
-                  ]))
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LoginPage()));
+                },
+                child: RichText(
+                    text: TextSpan(
+                        text: 'Already have an account? ',
+                        style: Theme.of(context).textTheme.titleMedium,
+                        children: [
+                      TextSpan(
+                          text: 'Sign In',
+                          style: TextStyle(
+                            color: Pallete.gradient2,
+                            fontWeight: FontWeight.bold,
+                          )),
+                    ])),
+              )
             ],
           ),
         ),
